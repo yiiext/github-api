@@ -2,6 +2,8 @@
 
 class EGithub extends CComponent
 {
+	public static $apiBaseUrl = 'https://api.github.com/';
+
 	public $username = '';
 	public $password = '';
 	private $authMode = 0;
@@ -11,36 +13,50 @@ class EGithub extends CComponent
 	 */
 	public function authenticatePassword()
 	{
-		
+
 	}
-	
+
 	/**
 	 * @todo: implement
 	 */
 	public function authenticateOAuth()
 	{
-		
+
 	}
-	
 
 
 
 
 
 
-	protected function githubRequest()
+	public static function getApiBaseUrl()
 	{
-		$c = curl_init();
-		if ($this->authMode == 0) {
-			//@todo: add auth params
-		}
-		//@todo: add url
+		return (substr(static::$apiBaseUrl, -1, 1) == '/') ?
+				substr(static::$apiBaseUrl, 0, -1) :
+				static::$apiBaseUrl;
+	}
 
+	public static function githubRequest($url, $requestType, $data)
+	{
+		$url = static::getApiBaseUrl() . $url;
+
+		$c = curl_init();
+
+//		if ($this->authMode == 0) {
+//			//@todo: add auth params
+//		}
+
+		// @todo: implement POST/DELETE/... request types
 		curl_setopt($c, CURLOPT_URL, $url);
-		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+
+		curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+
 		$response = curl_exec($c);
 		curl_close($c);
-		// @todo: evaluate response
+
+		return array(200, json_decode($response));
 	}
 
 
